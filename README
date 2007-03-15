@@ -1,0 +1,43 @@
+h2. What is this?
+
+RcovNotifier can be used to send nag emails if a build falls below a minimum 
+threshold or goes above a max threshold (to remind you to update your min)
+
+You can keep up with any changes at http://trac.underpantsgnome.com/plugins
+
+h2. Installing 
+
+Drop the plugin directory into your CuriseControl/builder_plugins/installed 
+directory and add the appropriate settings to your project config
+
+<pre><code>
+Project.configure do |project|
+  # Build the project by invoking the rcov test task
+  project.rake_task = 'migrate_cruise'
+
+  # configure your project for RcovNotifier
+  # the minimum acceptable coverage
+  project.rcov_notifier.min_threshold = 90.0
+  # the maximum acceptable coverage (so you can update the min)
+  project.rcov_notifier.max_threshold = 92.0
+  # where to look for the coverage numbers, this is assumed to be in the build artifacts
+  project.rcov_notifier.rcov_index = 'coverage/index.html'
+  # who to notify when necessary
+  project.rcov_notifier.recipients = %w(michael@underpantsgnome.com george@examle.com)
+  # in case you just want an update every N builds
+  project.rcov_notifier.send_status_every_n_builds = 10
+end
+</pre></code>
+
+RcovNotifer uses the standard email templates so you should see the same type 
+of output from this and CruiseControl.rb
+
+h2. The Rake task I'm using
+
+desc 'CruiseControl build target'
+task :migrate_cruise do
+  Rake::Task['db:migrtae'].invoke
+  Rake::Task['test:test:rcov'].invoke
+  out = ENV['CC_BUILD_ARTIFACTS'] || 'out'
+  mv 'coverage/test', "#{out}/coverage"
+end
