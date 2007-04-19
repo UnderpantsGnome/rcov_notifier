@@ -42,7 +42,7 @@ private
 
   def notify(build, subject, message)
     CruiseControl::Log.event("sending: #{subject}, to:#{recipients.join(' ')}", :debug)
-    BuildMailer.send(:deliver_build_report, build, recipients, subject, message)
+    BuildMailer.send(:deliver_build_report, build, recipients, Configuration.email_from, subject, message)
     CruiseControl::Log.event("Sent e-mail to #{recipients.size == 1 ? "1 person" : "#{recipients.size} people"}", :debug)
   rescue => e
     settings = ActionMailer::Base.smtp_settings.map { |k,v| "  #{k.inspect} = #{v.inspect}" }.join("\n")
