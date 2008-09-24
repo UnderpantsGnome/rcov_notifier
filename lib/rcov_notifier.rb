@@ -14,7 +14,7 @@ class RcovNotifier
     if File.exists?(file_name)
       subject = message = nil
       File.open(file_name).each_line do |line|
-        if line =~ /<tt.*?>(\d+\.\d+)%<\/tt>&nbsp;<\/td>/
+        if line =~ /<tt.*?>\s*(\d+\.\d+)%\s*<\/tt>\s*&nbsp;\s*<\/td>/
           total_coverage = eval($1)
           if total_coverage < min_threshold.to_f
             message = subject = "#{build.project.name}:#{build.label} Coverage below threshold, #{total_coverage} < #{min_threshold}"
